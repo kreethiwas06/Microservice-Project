@@ -4,7 +4,7 @@ services:
   api-gateway:
     build: ./api-gateway
     ports:
-      - "3000:3000"
+      - "3005:3000"
     environment:
       - USER_SERVICE_URL=http://user-service:3001
       - PRODUCT_SERVICE_URL=http://product-service:3002
@@ -35,7 +35,7 @@ services:
     build:
       context: ./frontend
       args:
-        - VITE_API_URL=http://localhost:3000/api
+        - VITE_API_URL=http://localhost:3005/api
     ports:
       - "80:80"
     depends_on:
