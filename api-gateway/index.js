@@ -5,7 +5,7 @@ const rateLimit = require("express-rate-limit");
 const morgan = require("morgan");
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3005;
 
 // ─── Middleware ───────────────────────────────────────────────────────────────
 app.use(cors({ origin: process.env.FRONTEND_URL || "*" }));
