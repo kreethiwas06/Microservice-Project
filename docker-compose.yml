@@ -4,7 +4,7 @@ services:
   api-gateway:
     build: ./api-gateway
     ports:
-      - "3005:3000"
+      - "3009:3005"
     environment:
       - USER_SERVICE_URL=http://user-service:3001
       - PRODUCT_SERVICE_URL=http://product-service:3002
