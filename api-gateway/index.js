@@ -10,17 +10,16 @@ const PORT = process.env.PORT || 3000;
 // ─── Middleware ───────────────────────────────────────────────────────────────
 app.use(cors({ origin: process.env.FRONTEND_URL || "*" }));
 app.use(morgan("combined"));
-app.use(express.json());
 
 // Rate limiting
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
+  windowMs: 15 * 60 * 1000,
   max: 100,
   message: { error: "Too many requests, please try again later." },
 });
 app.use(limiter);
 
-// ─── Service URLs (from env or defaults for local dev) ───────────────────────
+// ─── Service URLs ─────────────────────────────────────────────────────────────
 const USER_SERVICE_URL =
   process.env.USER_SERVICE_URL || "http://localhost:3001";
 const PRODUCT_SERVICE_URL =
@@ -30,8 +29,7 @@ const PRODUCT_SERVICE_URL =
 const authenticate = (req, res, next) => {
   const token = req.headers["authorization"];
   if (!token) return res.status(401).json({ error: "No token provided" });
-  // In production, verify JWT here
-  req.headers["x-user-id"] = "demo-user"; // Forward user context
+  req.headers["x-user-id"] = "demo-user";
   next();
 };
 
@@ -50,12 +48,14 @@ app.get("/health", (req, res) => {
 
 // ─── Proxy Routes ─────────────────────────────────────────────────────────────
 
-// Public routes (no auth required)
+// Public: Login
 app.use(
   "/api/users/login",
   createProxyMiddleware({
     target: USER_SERVICE_URL,
     changeOrigin: true,
+    proxyTimeout: 10000,
+    timeout: 10000,
     pathRewrite: { "^/api/users/login": "/auth/login" },
     on: {
       error: (err, req, res) => {
@@ -65,11 +65,14 @@ app.use(
   })
 );
 
+// Public: Register
 app.use(
   "/api/users/register",
   createProxyMiddleware({
     target: USER_SERVICE_URL,
     changeOrigin: true,
+    proxyTimeout: 10000,
+    timeout: 10000,
     pathRewrite: { "^/api/users/register": "/auth/register" },
     on: {
       error: (err, req, res) => {
@@ -79,13 +82,15 @@ app.use(
   })
 );
 
-// Protected: User routes
+// Protected: Users
 app.use(
   "/api/users",
   authenticate,
   createProxyMiddleware({
     target: USER_SERVICE_URL,
     changeOrigin: true,
+    proxyTimeout: 10000,
+    timeout: 10000,
     pathRewrite: { "^/api/users": "/users" },
     on: {
       error: (err, req, res) => {
@@ -95,13 +100,15 @@ app.use(
   })
 );
 
-// Protected: Product routes
+// Protected: Products
 app.use(
   "/api/products",
   authenticate,
   createProxyMiddleware({
     target: PRODUCT_SERVICE_URL,
     changeOrigin: true,
+    proxyTimeout: 10000,
+    timeout: 10000,
     pathRewrite: { "^/api/products": "/products" },
     on: {
       error: (err, req, res) => {
@@ -121,3 +128,5 @@ app.listen(PORT, () => {
   console.log(`   → Users:    ${USER_SERVICE_URL}`);
   console.log(`   → Products: ${PRODUCT_SERVICE_URL}`);
 });
+
+
