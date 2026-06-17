@@ -7,7 +7,7 @@ pipeline {
         stage('Git checkout code') {
             steps {
                 git branch: 'main', 
-                credentialsId: 'aws cred', 
+                credentialsId: 'kreethiwas06', 
                 url: 'https://github.com/kreethiwas06/Microservice-Project.git'
             }
         }
