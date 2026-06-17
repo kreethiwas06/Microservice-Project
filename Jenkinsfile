@@ -1,14 +1,14 @@
 pipeline {
     agent any 
     environment {
-        EC2_IP = "13.206.38.97"
+        EC2_IP = ""
     }
     stages {
         stage('Git checkout code') {
             steps {
                 git branch: 'main', 
-                credentialsId: 'Github-credentials', 
-                url: 'https://github.com/umapathy1729/Microservice-Project.git'
+                credentialsId: 'aws cred', 
+                url: 'https://github.com/kreethiwas06/Microservice-Project.git'
             }
         }
         stage('Deploy to EC2') {
@@ -18,7 +18,7 @@ pipeline {
                     ssh -o StrictHostKeyChecking=no ubuntu@${EC2_IP} '
                     set -e
                     rm -rf Microservice-Project
-                    git clone git@github.com:umapathy1729/Microservice-Project.git
+                    git clone git@github.com:kreethiwas06/Microservice-Project.git
 
                     cd Microservice-Project
                     git checkout main
